@@ -1,12 +1,23 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <time.h>
 
-int g_ReadDIpinSts[8] = {1,1,0,0,0,1,0,1};
-int g_AppDIpinSts[8] = {0,0,0,0,0,0,0,0};
+// typedef unsigned char uint8_t
+uint8_t g_ReadDIpinSts = 255;
+uint8_t g_AppDIpinSts = 0;
 
 // Global Variables to be used in the logic of ISR function
 int count[8] = {0,0,0,0,0,0,0,0};
 int Readpins[8] = {0,0,0,0,0,0,0,0};
+
+// Implementing the function to find bit in a given position
+int bitFind(int n) {
+
+    int bit;
+    bit = (( g_ReadDIpinSts & (1 << (n) ) ) ? 1 : 0 );
+
+    return bit;
+}
 
 // Implementing Interrupt Service Routine function
 int ISR_DIsampling() {
@@ -20,7 +31,7 @@ int ISR_DIsampling() {
             count[i] = 1;
         }
         else {
-            if (g_ReadDIpinSts[i] == Readpins[i]) {
+            if (bitFind(i) == Readpins[i]) {
                 count[i]++;
             }
             else {
@@ -31,13 +42,18 @@ int ISR_DIsampling() {
 
     // Storing the current Digital pin status into Readpins 
     for (int i=0; i<8; i++) {
-        Readpins[i] = g_ReadDIpinSts[i];
+        Readpins[i] = bitFind(i);
     }
 
     // Updating the g_AppDIpinSts variable
     for (int i=0; i<8; i++) {
         if(count[i] >= 10) {
-            g_AppDIpinSts[i] = g_ReadDIpinSts[i];
+            if(bitFind(i) == 1) {
+                g_AppDIpinSts |= 1 << (i);
+            }
+            else {
+                g_AppDIpinSts &= ~(1 << (i));
+            }
         }
     }
 
@@ -68,9 +84,7 @@ int main() {
         delay(100);
 
         // Printing the g_AppDIpinSts data after every ISR call
-        for (int i=0; i<8; i++) {
-            printf("%d ", g_AppDIpinSts[i]);
-        }
+        printf("g_AppDIpinSts value after every ISR call is :: %d", g_AppDIpinSts);
         printf("\n\n");
     }
 
