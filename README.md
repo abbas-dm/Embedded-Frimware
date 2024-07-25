@@ -1,5 +1,5 @@
 # Embedded-Frimware
-GREENDZINE TECHNOLOGIES PVT LTD INTERNSHIP ASSIGNMENT
+SCREENING <!--GREENDZINE TECHNOLOGIES PVT LTD--> INTERNSHIP ASSIGNMENT
 
 # The ISR will perform below functionality:
 Read the real-time status of digital input pins from a global variable g_ReadDIpinSts. Here, each bit in g_ReadDIpinSts represents the status of one digital input pin (I have assigned value to the g_ReadDIpinSts directly in code).
